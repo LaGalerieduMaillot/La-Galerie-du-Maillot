@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Galerie du Maillot</title>
+
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5;color:#111}
+header{background:#111;color:white;text-align:center;padding:25px}
+header h1{color:#d4af37;margin:0}
+nav{background:white;text-align:center;padding:14px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px #ddd}
+nav a{color:#111;margin:8px;text-decoration:none;font-weight:bold}
+.hero{text-align:center;padding:70px 20px;background:#111;color:white}
+.hero h2{color:#d4af37;font-size:36px}
+.btn{background:#d4af37;color:#111;border:0;padding:12px 18px;border-radius:8px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-block}
+section{max-width:1200px;margin:auto;padding:35px 20px}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:20px}
+input,select,textarea{padding:12px;border-radius:8px;border:1px solid #ccc;width:100%;box-sizing:border-box}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px}
+.card{background:white;border-radius:14px;padding:18px;text-align:center;box-shadow:0 4px 12px #ddd}
+.card img{width:100%;height:230px;object-fit:cover;border-radius:10px;background:#111}
+.price{color:#d4af37;font-size:22px;font-weight:bold}
+.cart{background:white;border:2px solid #d4af37;border-radius:14px;padding:20px}
+.cart li{margin:12px 0}
+.small{color:#666;font-size:14px}
+footer{text-align:center;background:#111;color:white;padding:25px}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>La Galerie du Maillot</h1>
+<p>Maillots de football clubs & sélections à prix accessibles</p>
+</header>
+
+<nav>
+<a href="#accueil">Accueil</a>
+<a href="#boutique">Boutique</a>
+<a href="#panier">Panier</a>
+<a href="#tailles">Tailles</a>
+<a href="#regles">Règles</a>
+<a href="#contact">Contact</a>
+</nav>
+
+<div class="hero" id="accueil">
+<h2>Bienvenue à La Galerie du Maillot</h2>
+<p>Découvre notre sélection de maillots de football.</p>
+<a class="btn" href="#boutique">Voir la boutique</a>
+</div>
+
+<section id="boutique">
+<h2>Boutique</h2>
+
+<div class="filters">
+<input type="text" id="search" placeholder="Rechercher un maillot..." oninput="displayProducts()">
+
+<select id="category" onchange="displayProducts()">
+<option value="">Toutes catégories</option>
+<option value="Club">Clubs européens</option>
+<option value="Nation">Sélections nationales</option>
+<option value="Vintage">Vintage</option>
+</select>
+
+<select id="sizeFilter" onchange="displayProducts()">
+<option value="">Toutes tailles</option>
+<option>S</option>
+<option>M</option>
+<option>L</option>
+<option>XL</option>
+<option>XXL</option>
+</select>
+</div>
+
+<div class="products" id="productList"></div>
+</section>
+
+<section id="panier">
+<h2>Panier</h2>
+<div class="cart">
+<ul id="cart"></ul>
+<p><strong>Total : <span id="total">0.00</span> €</strong></p>
+<button class="btn" onclick="checkout()">Payer avec PayPal / Envoyer la commande</button>
+<p class="small">Un numéro de commande sera généré automatiquement.</p>
+</div>
+</section>
+
+<section id="tailles">
+<h2>Guide des tailles</h2>
+<p>S : 165-170 cm | M : 170-175 cm | L : 175-180 cm | XL : 180-185 cm | XXL : 185 cm+</p>
+</section>
+
+<section id="regles">
+<h2>Règles d'achat</h2>
+<p>✅ Paiement principal : PayPal.</p>
+<p>✅ Le client reçoit un numéro de commande.</p>
+<p>✅ Le client doit envoyer le mail de commande après paiement.</p>
+<p>✅ Livraison estimée : 7 à 20 jours ouvrés.</p>
+<p>✅ Vérifiez bien la taille avant commande.</p>
+<p>✅ Les articles personnalisés/flockés ne sont ni repris ni remboursés.</p>
+</section>
+
+<section id="contact">
+<h2>Contact</h2>
+<p>Pour toute question ou autre moyen de paiement :</p>
+<p><strong>Email :</strong> lagaleriedumaillot@gmail.com</p>
+</section>
+
+<footer>
+<p>© 2026 La Galerie du Maillot</p>
+</footer>
+
+<script>
+const PAYPAL_LINK = "https://paypal.me/Lagaleriedumaillot";
+const EMAIL_COMMANDE = "lagaleriedumaillot@gmail.com";
+
+function jerseyImage(text, color1, color2) {
+return `data:image/svg+xml;utf8,
+<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'>
+<rect width='100%' height='100%' fill='%23111'/>
+<path d='M90 60 L120 35 H180 L210 60 L190 100 L180 90 V230 H120 V90 L110 100 Z' fill='${color1}' stroke='${color2}' stroke-width='7'/>
+<text x='150' y='265' fill='%23d4af37' font-size='23' font-family='Arial' text-anchor='middle'>${text}</text>
+</svg>`;
+}
+
+const products = [
+{name:"Maillot Paris", club:"Paris", category:"Club", year:"2025", price:39.99, sizes:["S","M","L","XL","XXL"], image:jerseyImage("Paris","%23004C99","%23ffffff")},
+{name:"Maillot Marseille", club:"Marseille", category:"Club", year:"2025", price:39.99, sizes:["S","M","L","XL"], image:jerseyImage("Marseille","%23ffffff","%2300AEEF")},
+{name:"Maillot Madrid", club:"Madrid", category:"Club", year:"2025", price:39.99, sizes:["S","M","L","XL","XXL"], image:jerseyImage("Madrid","%23ffffff","%23d4af37")},
+{name:"Maillot Barcelone", club:"Barcelone", category:"Club", year:"2025", price:39.99, sizes:["S","M","L","XL"], image:jerseyImage("Barcelone","%238A1538","%230043D9")},
+{name:"Maillot Manchester Bleu", club:"Manchester", category:"Club", year:"2025", price:39.99, sizes:["S","M","L","XL"], image:jerseyImage("Manchester","%236CABDD","%23ffffff")},
+{name:"Maillot Liverpool", club:"Liverpool", category:"Club", year:"2025", price:39.99, sizes:["S","M","L","XL"], image:jerseyImage("Liverpool","%23C8102E","%23ffffff")},
+{name:"Maillot Arsenal", club:"Arsenal", category:"Club", year:"2025", price:39.99, sizes:["S","M","L","XL"], image:jerseyImage("Arsenal","%23EF0107","%23ffffff")},
+{name:"Maillot Milan", club:"Milan", category:"Club", year:"2025", price:39.99, sizes:["S","M","L","XL"], image:jerseyImage("Milan","%23ff0000","%23000000")},
+{name:"Maillot Bayern", club:"Bayern", category:"Club", year:"2025", price:39.99, sizes:["S","M","L","XL"], image:jerseyImage("Bayern","%23DC052D","%23ffffff")},
+
+{name:"Maillot France", club:"France", category:"Nation", year:"2025", price:39.99, sizes:["S","M","L","XL"], image:jerseyImage("France","%23002B7F","%23ffffff")},
+{name:"Maillot Algérie", club:"Algérie", category:"Nation", year:"2025", price:39.99, sizes:["S","M","L","XL"], image:jerseyImage("Algérie","%23ffffff","%23008043")},
+{name:"Maillot Maroc", club:"Maroc", category:"Nation", year:"2025", price:39.99, sizes:["S","M","L","XL"], image:jerseyImage("Maroc","%23C1272D","%23008043")},
+{name:"Maillot Portugal", club:"Portugal", category:"Nation", year:"2025", price:39.99, sizes:["S","M","L","XL"], image:jerseyImage("Portugal","%23006432","%23ff0000")},
+{name:"Maillot Brésil", club:"Brésil", category:"Nation", year:"2025", price:39.99, sizes:["S","M","L","XL"], image:jerseyImage("Brésil","%23FEDD00","%23009439")},
+{name:"Maillot Argentine", club:"Argentine", category:"Nation", year:"2025", price:39.99, sizes:["S","M","L","XL"], image:jerseyImage("Argentine","%2375AADB","%23ffffff")},
+
+{name:"Maillot Vintage 1998", club:"Vintage", category:"Vintage", year:"1998", price:44.99, sizes:["S","M","L","XL"], image:jerseyImage("1998","%23002B7F","%23ffffff")},
+{name:"Maillot Vintage 2006", club:"Vintage", category:"Vintage", year:"2006", price:44.99, sizes:["S","M","L","XL"], image:jerseyImage("2006","%23ffffff","%23002B7F")},
+{name:"Maillot Vintage 2010", club:"Vintage", category:"Vintage", year:"2010", price:44.99, sizes:["S","M","L","XL"], image:jerseyImage("2010","%23ff0000","%23d4af37")},
+{name:"Maillot Vintage 2014", club:"Vintage", category:"Vintage", year:"2014", price:44.99, sizes:["S","M","L","XL"], image:jerseyImage("2014","%23FEDD00","%23009439")},
+{name:"Maillot Vintage 2018", club:"Vintage", category:"Vintage", year:"2018", price:44.99, sizes:["S","M","L","XL"], image:jerseyImage("2018","%23002B7F","%23ffffff")},
+{name:"Maillot Vintage 2022", club:"Vintage", category:"Vintage", year:"2022", price:44.99, sizes:["S","M","L","XL"], image:jerseyImage("2022","%2375AADB","%23ffffff")}
+];
+
+let cart = [];
+
+function displayProducts(){
+const list=document.getElementById("productList");
+const search=document.getElementById("search").value.toLowerCase();
+const category=document.getElementById("category").value;
+const size=document.getElementById("sizeFilter").value;
+list.innerHTML="";
+
+products.filter(p=>{
+return (!search || p.name.toLowerCase().includes(search) || p.club.toLowerCase().includes(search))
+&& (!category || p.category===category)
+&& (!size || p.sizes.includes(size));
+}).forEach((p,i)=>{
+list.innerHTML+=`
+<div class="card">
+<img src="${p.image}" alt="${p.name}">
+<h3>${p.name}</h3>
+<p>${p.category} - ${p.year}</p>
+<p class="price">${p.price.toFixed(2)} €</p>
+
+<select id="size${i}">
+${p.sizes.map(s=>`<option>${s}</option>`).join("")}
+</select>
+
+<input type="text" id="flockName${i}" placeholder="Flocage nom (optionnel)">
+<input type="number" id="flockNumber${i}" placeholder="Numéro (optionnel)">
+
+<button class="btn" onclick="addToCart(${products.indexOf(p)}, ${i})">Ajouter au panier</button>
+</div>`;
+});
+}
+
+function addToCart(index,i){
+const size=document.getElementById("size"+i).value;
+const flockName=document.getElementById("flockName"+i).value;
+const flockNumber=document.getElementById("flockNumber"+i).value;
+
+cart.push({...products[index], size, flockName, flockNumber});
+updateCart();
+}
+
+function updateCart(){
+const cartList=document.getElementById("cart");
+const total=document.getElementById("total");
+cartList.innerHTML="";
+let sum=0;
+
+cart.forEach((item,index)=>{
+sum+=item.price;
+cartList.innerHTML+=`
+<li>
+${item.name} - Taille ${item.size} - ${item.price.toFixed(2)} €
+<br>Flocage : ${item.flockName || "Aucun"} ${item.flockNumber || ""}
+<button onclick="removeFromCart(${index})">Supprimer</button>
+</li>`;
+});
+
+total.textContent=sum.toFixed(2);
+}
+
+function removeFromCart(index){
+cart.splice(index,1);
+updateCart();
+}
+
+function generateOrderNumber(){
+const date=new Date();
+const random=Math.floor(1000+Math.random()*9000);
+return "LGM-"+date.getFullYear().toString().slice(2)+(date.getMonth()+1)+date.getDate()+"-"+random;
+}
+
+function checkout(){
+if(cart.length===0){
+alert("Votre panier est vide.");
+return;
+}
+
+const orderNumber=generateOrderNumber();
+let total=0;
+let orderText="";
+
+cart.forEach(item=>{
+total+=item.price;
+orderText+=`- ${item.name} | Taille ${item.size} | ${item.price.toFixed(2)} € | Flocage : ${item.flockName || "Aucun"} ${item.flockNumber || ""}%0D%0A`;
+});
+
+const paypalUrl=PAYPAL_LINK+"/"+total.toFixed(2);
+const subject=`Commande ${orderNumber} - La Galerie du Maillot`;
+
+const body=
+`Bonjour,%0D%0A%0D%0A`+
+`Voici ma commande :%0D%0A%0D%0A`+
+`Numéro de commande : ${orderNumber}%0D%0A%0D%0A`+
+`${orderText}%0D%0A`+
+`Total : ${total.toFixed(2)} €%0D%0A%0D%0A`+
+`Lien PayPal : ${paypalUrl}%0D%0A%0D%0A`+
+`Nom :%0D%0A`+
+`Prénom :%0D%0A`+
+`Adresse de livraison :%0D%0A`+
+`Téléphone :%0D%0A%0D%0A`+
+`Merci.`;
+
+alert("Numéro de commande : "+orderNumber);
+
+window.open(paypalUrl,"_blank");
+
+setTimeout(()=>{
+window.location.href=`mailto:${EMAIL_COMMANDE}?subject=${subject}&body=${body}`;
+},1200);
+}
+
+displayProducts();
+</script>
+
+</body>
+</html>
